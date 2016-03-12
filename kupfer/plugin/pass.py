@@ -16,9 +16,9 @@ class PassSource(Source):
         super(PassSource, self).__init__(name)
 
     def get_items(self):
-        # TODO: location of storage should be taken from env
         # TODO: this needs to return exact ID of the password, with the directory
-        for root, _dirn, filn in os.walk('/home/majki/.password-store/'):
+        for root, _dirn, filn in os.walk(
+                os.path.expanduser('~/.password-store/')):
             for f in filn:
                 name, ext = os.path.splitext(f)
                 if ext == '.gpg':
