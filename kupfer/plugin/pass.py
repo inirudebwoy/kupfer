@@ -16,13 +16,13 @@ class PassSource(Source):
         super(PassSource, self).__init__(name)
 
     def get_items(self):
-        # return only gpg files, with no extension
         # TODO: location of storage should be taken from env
         # TODO: this needs to return exact ID of the password, with the directory
         for root, _dirn, filn in os.walk('/home/majki/.password-store/'):
             for f in filn:
-                name, _ = os.path.splitext(f)
-                yield PassLeaf(os.path.join(root, name), name)
+                name, ext = os.path.splitext(f)
+                if ext == '.gpg':
+                    yield PassLeaf(os.path.join(root, name), name)
 
     def provides(self):
         yield PassLeaf
@@ -40,6 +40,3 @@ class GetPassword(Action):
 class PassLeaf(TextLeaf):
     def get_actions(self):
         return [GetPassword()]
-
-    def repr_key(self):
-        return self.object
