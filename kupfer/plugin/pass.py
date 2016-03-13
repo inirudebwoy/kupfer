@@ -1,7 +1,7 @@
 __kupfer_name__ = _('Pass')
 __kupfer_sources__ = ('PassSource', )
 __kupfer_actions__ = ('CopyPassword', )
-__description__ = _('Access to pass')
+__description__ = _('Access to password store')
 __version__ = '0.0.1'
 __author__ = ('Michal Klich <michal@michalklich.com>')
 
@@ -23,8 +23,7 @@ class PassSource(Source):
                 name, ext = os.path.splitext(f)
                 if ext == '.gpg':
                     abs_path = os.path.join(root, name)
-                    p = os.path.relpath(abs_path, PSROOT_PATH)
-                    yield PassLeaf(p)
+                    yield PassLeaf(os.path.relpath(abs_path, PSROOT_PATH))
 
     def provides(self):
         yield PassLeaf
@@ -39,6 +38,9 @@ class CopyPassword(Action):
 
     def activate(self, obj):
         check_call(['pass', 'show', '-c', obj.name])
+
+    def get_icon_name(self):
+        return 'edit-copy'
 
 
 class PassLeaf(TextLeaf):
