@@ -11,9 +11,10 @@ __version__ = '0.0.1'
 __author__ = ('Michal Klich <michal@michalklich.com>')
 
 import os
-from subprocess import check_call
+from subprocess import check_call, CalledProcessError, PIPE
 
 from kupfer.objects import Action, TextLeaf, Source
+from kupfer.pretty import debug, print_debug
 
 PSROOT_PATH = os.path.expanduser('~/.password-store/')
 
@@ -42,7 +43,12 @@ class CopyPassword(Action):
         yield TextLeaf
 
     def activate(self, obj):
-        check_call(['pass', 'show', '-c', obj.name])
+        try:
+            check_call(['pass', 'show', '-c', obj.name], stdout=PIPE)
+        except CalledProcessError as e:
+            if debug:
+                print_debug(e)
+            pass
 
     def get_icon_name(self):
         return 'edit-copy'
