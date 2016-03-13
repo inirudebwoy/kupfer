@@ -1,3 +1,8 @@
+"""Plugin for password store
+
+https://www.passwordstore.org/
+
+"""
 __kupfer_name__ = _('Pass')
 __kupfer_sources__ = ('PassSource', )
 __kupfer_actions__ = ('CopyPassword', )
@@ -23,10 +28,10 @@ class PassSource(Source):
                 name, ext = os.path.splitext(f)
                 if ext == '.gpg':
                     abs_path = os.path.join(root, name)
-                    yield PassLeaf(os.path.relpath(abs_path, PSROOT_PATH))
+                    yield TextLeaf(os.path.relpath(abs_path, PSROOT_PATH))
 
     def provides(self):
-        yield PassLeaf
+        yield TextLeaf
 
 
 class CopyPassword(Action):
@@ -34,15 +39,10 @@ class CopyPassword(Action):
         return _('Copy password to the clipboard')
 
     def item_types(self):
-        yield PassLeaf
+        yield TextLeaf
 
     def activate(self, obj):
         check_call(['pass', 'show', '-c', obj.name])
 
     def get_icon_name(self):
         return 'edit-copy'
-
-
-class PassLeaf(TextLeaf):
-    def get_actions(self):
-        return [CopyPassword()]
