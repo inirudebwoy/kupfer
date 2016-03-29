@@ -11,12 +11,18 @@ __version__ = '0.0.1'
 __author__ = ('Michal Klich <michal@michalklich.com>')
 
 import os
-from subprocess import check_call, CalledProcessError, PIPE
+from subprocess import Popen, PIPE
 
+from kupfer import plugin_support
 from kupfer.objects import Action, TextLeaf, Source
 from kupfer.pretty import debug, print_debug
 
-PSROOT_PATH = os.path.expanduser('~/.password-store/')
+__kupfer_settings__ = plugin_support.PluginSettings({
+    'key': 'storage_location',
+    'label': _('Password store location'),
+    'type': str,
+    'value': '~/.password-store/'
+})
 
 
 class PassSource(Source):
@@ -24,12 +30,14 @@ class PassSource(Source):
         super(PassSource, self).__init__(name)
 
     def get_items(self):
-        for root, _dirn, filn in os.walk(PSROOT_PATH):
+        pass_store_dir = os.path.expanduser(
+            __kupfer_settings__['storage_location'])
+        for root, _dirn, filn in os.walk(pass_store_dir):
             for f in filn:
                 name, ext = os.path.splitext(f)
                 if ext == '.gpg':
                     abs_path = os.path.join(root, name)
-                    yield TextLeaf(os.path.relpath(abs_path, PSROOT_PATH))
+                    yield TextLeaf(os.path.relpath(abs_path, pass_store_dir))
 
     def provides(self):
         yield TextLeaf
@@ -44,8 +52,8 @@ class CopyPassword(Action):
 
     def activate(self, obj):
         try:
-            check_call(['pass', 'show', '-c', obj.name], stdout=PIPE)
-        except CalledProcessError as e:
+            Popen(['pass', 'show', '-c', obj.name], stdout=PIPE)
+        except OSError as e:
             if debug:
                 print_debug(e)
             pass
