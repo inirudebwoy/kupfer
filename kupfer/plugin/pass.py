@@ -6,7 +6,7 @@ https://www.passwordstore.org/
 __kupfer_name__ = _('Pass')
 __kupfer_sources__ = ('PassSource', )
 __kupfer_actions__ = ('CopyPassword', )
-__description__ = _('Access to password store')
+__description__ = _('Integration with pass. (https://passwordstore.org)')
 __version__ = '0.0.1'
 __author__ = ('Michal Klich <michal@michalklich.com>')
 
